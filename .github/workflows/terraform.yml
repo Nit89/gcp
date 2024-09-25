@@ -13,7 +13,7 @@ env:
   IMAGE: main
   REGION: us-central1 # TODO: update to your region
   # SERVICE: my-flask-app # TODO: update to your service name
-  # SERVICE: my-flask-app
+  SERVICE: sample
 
   # us-central1-docker.pkg.dev/eco-hangar-381618/nitesh
 jobs:
@@ -45,15 +45,6 @@ jobs:
 
       - name: Build and Push Container
         run: |
-          echo "${{env.GAR_LOCATION}}"
-          echo "${{env.PROJECT_ID}}"
-          echo "${{env.GAR_NAME}}"
-          # docker build -t "${{env.GAR_LOCATION}}-docker.pkg.dev/${{ env.PROJECT_ID}}/${{ env.GAR_NAME}}/${{env.SERVICE }}:${{github.sha }}" ./
-          # docker push "${{env.GAR_LOCATION}}-docker.pkg.dev/${{ env.PROJECT_ID}}/${{ env.GAR_NAME}}/${{env.SERVICE }}:${{github.sha }}"
-          # docker build -t "${{env.GAR_LOCATION}}-docker.pkg.dev/${{ env.PROJECT_ID}}/${{ env.GAR_NAME}}:${{github.sha }}" ./
-          # docker push "${{env.GAR_LOCATION}}-docker.pkg.dev/${{ env.PROJECT_ID}}/${{ env.GAR_NAME}}:${{github.sha }}"
-          # docker build -t "${{env.GAR_LOCATION}}-docker.pkg.dev/${{ env.PROJECT_ID}}/${{ env.GAR_NAME}}:${{github.sha}}" ./
-          # docker push "${{env.GAR_LOCATION}}-docker.pkg.dev/${{ env.PROJECT_ID}}/${{ env.GAR_NAME}}:${{github.sha}}"
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA" ./
           docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA"
 
@@ -66,7 +57,16 @@ jobs:
       #      service: ${{ env.SERVICE }}
       #      region: ${{env.REGION }}
       #      image: "${{env.GAR_LOCATION}}-docker.pkg.dev/${{ env.PROJECT_ID}}/${{ env.GAR_NAME}}/${{env.SERVICE }}:${{github.sha }}"
-     
+
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE }} \
+            --image "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}" \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated
+      
       # - name:  Show Output
       #   run: echo ${{ steps.deploy.outputs.url}}
 
