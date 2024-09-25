@@ -9,7 +9,7 @@ env:
   PROJECT_ID: eco-hangar-381618 # TODO: update to your Google Cloud project ID
   GAR_NAME : nitesh
   GAR_LOCATION: us-central1
-  REPOSITORY: name
+  REPOSITORY: nitesh
   IMAGE: main
   REGION: us-central1 # TODO: update to your region
   # SERVICE: my-flask-app # TODO: update to your service name
